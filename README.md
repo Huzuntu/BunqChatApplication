@@ -41,6 +41,36 @@ Setup Instructions
     php -S localhost:8080
     ```
 
+I have added my chat.db SQLite database. If you want to create a database from scratch:
+    ```
+    
+    CREATE TABLE Users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL,
+      password TEXT NOT NULL
+    );
+    
+    CREATE TABLE Groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+    );
+    
+    CREATE TABLE Messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(group_id) REFERENCES Groups(id),
+      FOREIGN KEY(user_id) REFERENCES Users(id)
+    );
+    
+
+
+    
+
+
+
 
 
 
