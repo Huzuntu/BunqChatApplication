@@ -1,0 +1,191 @@
+body 
+{
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+}
+
+.container 
+{
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.logo 
+{
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+h2 
+{
+    margin-bottom: 20px;
+    color: #333;
+}
+
+label 
+{
+    display: block;
+    margin: 8px 0 4px;
+    color: #555;
+}
+
+input[type="text"], input[type="password"], input[type="email"] 
+{
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+button 
+{
+    width: 100%;
+    padding: 10px;
+    background-color: #5a67d8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover 
+{
+    background-color: #4c51bf;
+}
+
+.signup-btn, .login-btn 
+{
+    background-color: #48bb78;
+    margin-top: 10px;
+}
+
+.signup-btn:hover, .login-btn:hover 
+{
+    background-color: #38a169;
+}
+
+#chat-container 
+{
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
+
+#messages 
+{
+    padding: 10px;
+}
+
+#message-input 
+{
+    width: 80%;
+    padding: 10px;
+}
+
+.chat-div
+{
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.chat-group-btn 
+{
+    cursor: pointer;
+    padding: 10px;
+    margin: 4px 0;
+    background-color: #869086;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+.chat-group-btn:hover 
+{
+    background-color: #45a049;
+}
+
+.chat-window 
+{
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    display: none; 
+}
+
+header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    z-index: 1000; 
+}
+
+header .back-button 
+{
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 18px;
+    padding: 10px 15px;
+    cursor: pointer;
+    width: auto;
+    text-align: left; 
+}
+
+header .back-button i 
+{
+    margin-right: 5px;
+}
+
+header .back-button:hover 
+{
+    background-color: #444;
+    color: #5a67d8;
+}
+
+header .logout-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    width: auto; 
+    border-radius: 5px;
+}
+
+header .logout-button:hover 
+{
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+header .logout-button i 
+{
+    margin-right: 5px;
+}

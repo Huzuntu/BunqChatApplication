@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="chatStyle.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+</head>
+
+<body>
+    <header>
+        <button onclick="window.location.href='chatRoom.html'" class="back-button">
+            <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <button onclick="logout()" class="logout-button">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </header>
+
+    <div class="container">
+        <div class="msg-header">
+            <div class="container1">
+                <img src="logo.png" class="msgimg" />
+                <div class="active">
+                    <p id="group-name"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-page">
+            <div class="msg-inbox">
+                <div class="chats">
+                    <div class="msg-page" id="messageContainer">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="msg-bottom">
+                    <div class="input-group">
+                        <input type="text" id="messageInput" class="form-control" placeholder="Write message..." />
+                        <span class="input-group-text send-icon" onclick="sendMessage()">
+                            <i class="bi bi-send"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // When creating buttons for each chat group
+        // I parsed groupId, groupName, and currentUserId in the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupId = urlParams.get('group_id');
+        const groupName = decodeURIComponent(urlParams.get('group_name'));
+        const currentUserId = urlParams.get('user_id'); 
+
+        // Dynamically display group name 
+        document.getElementById('group-name').textContent = groupName;
+
+        // This is for using keyboard 'Enter' key to send message
+        document.getElementById('messageInput').addEventListener('keydown', function(event) 
+        {
+            if (event.key === 'Enter') 
+            {
+                sendMessage();
+            }
+        });
+
+        // I am fetching / loading messages on page load and refresh every 10 seconds
+        document.addEventListener("DOMContentLoaded", () => 
+        {
+            fetchMessages(groupId);
+            setInterval(() => fetchMessages(groupId), 10000);
+        });
+
+        // This function fetches messages using /getMessages route
+        // It is also sending group Id to the route
+        async function fetchMessages(groupId) 
+        {
+            try 
+            {
+                const response = await fetch(`/getMessages?group_id=${groupId}`);
+                if (!response.ok) 
+                {
+                    throw new Error('Failed to fetch messages');
+                }
+
+                // Getting the messages and displaying these messages using a function
+                const messages = await response.json();
+                displayMessages(messages); 
+            }
+            catch (error) 
+            {
+                console.error("Error fetching messages:", error);
+            }
+        }
+
+        // Function to display fetched messages in the UI
+        // This function simply fills the messageContainer div in the html above
+        // This is like a reflection example in a very basic way
+        // I am filling messages by looking at the user Id and message.user_id
+        function displayMessages(messages) 
+        {
+            const msgPage = document.getElementById('messageContainer');
+            msgPage.innerHTML = '';
+
+            // Traversing through each messsage
+            messages.forEach((message) => 
+            {
+                const messageElement = document.createElement('div');
+                const timestamp = new Date(message.timestamp).toLocaleString();
+
+                const messageUserId = parseInt(message.user_id, 10);
+                const currentUser = parseInt(currentUserId, 10);
+
+                // I am checking if the message is from the current user (outgoing) or another user (incoming)
+                if (messageUserId === currentUser) 
+                {
+                    // Outgoing message structure
+                    messageElement.innerHTML = `
+                        <div class="outgoing-chats">
+                            <div class="outgoing-chats-img">
+                                <img src="user1.png" />
+                                <p><span class="username">${message.username}</span></p>
+                            </div>
+                            <div class="outgoing-msg">
+                                <div class="outgoing-chats-msg">
+                                    <p>${message.content}</p>
+                                    <span class="time">${timestamp}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                } 
+                else 
+                {
+                    // Incoming message structure
+                    messageElement.innerHTML = `
+                        <div class="received-chats">
+                            <div class="received-chats-img">
+                                <img src="user2.png" />
+                                <p><span class="username">${message.username}</span></p>
+                            </div>
+                            <div class="received-msg">
+                                <div class="received-msg-inbox">
+                                    <p>${message.content}</p>
+                                    <span class="time">${timestamp}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+
+                msgPage.appendChild(messageElement);
+            });
+        }
+
+        // Sending message by using POST /sendMessage route
+        // I am sending group_id, messageContent, and currentUserId to the /sendMessage route
+        // After response comes, if everything is ok I am loading / fetching messages
+        async function sendMessage() 
+        {
+            const messageContent = document.getElementById('messageInput').value;
+
+            if (!messageContent.trim()) return;
+
+            try 
+            {
+                const response = await fetch('/sendMessage', 
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        group_id: groupId,
+                        content: messageContent,
+                        user_id: currentUserId
+                    })
+                });
+
+                if (response.ok) 
+                {
+                    document.getElementById('messageInput').value = '';
+                    fetchMessages(groupId); 
+                }
+                else 
+                {
+                    console.error("Failed to send message.");
+                }
+            } 
+            catch (error) 
+            {
+                console.error("Error sending message:", error);
+            }
+        }
+
+        function logout() 
+        {
+            // Using /logout route to logout the current user
+            fetch('/logout', 
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => 
+            {
+                if (response.ok) 
+                {
+                    // Redirect to the index page (homepage of my application)
+                    // After that another user can log in or sign up
+                    window.location.href = 'index.html';
+                }
+                else 
+                {
+                    console.error("Logout failed");
+                }
+            })
+            .catch(error => 
+            {
+                console.error("Error during logout:", error);
+            });
+        }
+    </script>
+</body>
+</html>

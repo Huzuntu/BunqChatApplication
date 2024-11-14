@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - ChatApp</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+</head>
+<body>
+    <header>
+        <button onclick="window.location.href='chatRoom.html'" class="back-button">
+            <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <button onclick="logout()" class="logout-button">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </header>
+    <div class="chat-div">
+        <h1>Chat Room</h1>
+        <form action="/createChatGroup" method="POST">
+            <label for="groupName">Enter group name</label>
+            <input type="text" id="groupName" name="groupName" required>
+            <button type="submit">Create Chat Group</button>
+        </form>
+        
+        <div id="chatGroupList"></div>
+        
+        <form id="searchChatGroupForm" method="GET" onsubmit="filterChatGroups(event)">
+            <label for="query">Search for a chat group:</label>
+            <input type="text" id="query" name="query" required>
+            <button type="submit">Search</button>
+        </form>
+        <button id="resetSearchButton" onclick="loadChatGroups()">Show All Groups</button>
+    </div>
+
+
+    <script>
+        // This error checking is for when a user wants to create a group
+        // But the group name is already taken in the database
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+
+        if (error) 
+        {
+            alert(error);
+        }
+
+        // Loading chat groups at first
+        document.addEventListener('DOMContentLoaded', () => 
+        {
+            loadChatGroups(); 
+        });
+
+        // Array to store all groups
+        let allGroups = []; 
+
+        // This function fetches chat groups from database using /getChatGroups route
+        // Also fetches current user id using /getUserId route
+        // These data's are being sent to the updateChatGrouList function
+        async function loadChatGroups() 
+        {
+            const response = await fetch('/getChatGroups');
+            // Filling the allGroups array
+            allGroups = await response.json();  
+
+            // Getting the current user id from the session using /getUserId route
+            const currentUserId = await fetch('/getUserId');
+            userIdCurrent = await currentUserId.json();
+
+            updateChatGroupList(allGroups, userIdCurrent);  
+        }
+
+
+        // This function displays the chat groups
+        // It does that by creating buttons for each chat group that a user can click
+        // And route to the clicked chat group
+        function updateChatGroupList(groups, userIdCurrent) 
+        {
+            // chatGroupList is an empty div in the above section of html
+            const listDiv = document.getElementById('chatGroupList');
+            listDiv.innerHTML = ""; 
+
+            // For each group I am creating buttons
+            groups.forEach(group => 
+            {
+                const button = document.createElement('button');
+                button.textContent = group.name; 
+                button.classList.add('chat-group-btn');
+                
+                // Redirect to chat.html with group ID, name, and current user ID as URL parameters
+                button.onclick = () => 
+                {
+                    window.location.href = `/chat.html?group_id=${group.id}&group_name=${encodeURIComponent(group.name)}&user_id=${userIdCurrent.user_id}`;
+                };
+
+                listDiv.appendChild(button);
+            });
+        }
+
+
+        // This is for searching the chat group with the exact group name
+        // Not the exact acctually since I am using toLowerCase() before I search
+        function filterChatGroups(event) 
+        {
+            event.preventDefault(); 
+            
+            const searchText = document.getElementById('query').value.toLowerCase(); 
+            const filteredGroups = allGroups.filter(group => group.name.toLowerCase().includes(searchText)); 
+
+            updateChatGroupList(filteredGroups);
+        }
+
+        function logout() 
+        {
+            // Using /logout route to logout the current user
+            fetch('/logout', 
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => 
+            {
+                if (response.ok) 
+                {
+                    // Redirect to the index page (homepage of my application)
+                    // After that another user can log in or sign up
+                    window.location.href = 'index.html';
+                }
+                else 
+                {
+                    console.error("Logout failed");
+                }
+            })
+            .catch(error => 
+            {
+                console.error("Error during logout:", error);
+            });
+        }
+    </script>
+</body>
