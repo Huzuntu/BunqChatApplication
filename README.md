@@ -1,6 +1,10 @@
-Backend Engineer Coding Assignment
+# Backend Engineer Coding Assignment
 
 I was asked to implement a chat application backend using PHP but I added some frontend to make it more understandable.
+I tried to write a few tests, but since I am implementing an user interface (UI) for this project, you can see the responses in the UI.
+Lastly, I know I could have had a better file/folder structure but for some reason I had problems when dealing with another folders in the project folder.
+I tried to solve it but I couldn't do it. That is why I just wanted to be practical and write a working code. I tried to write as clean as possible.
+
 
 I used Slim framework for routing as it was asked in the assignment. 
 
@@ -32,8 +36,12 @@ Setup Instructions
     ```
     composer start
     ```
+    If this does not work somehow, this line will work and also you can change the ports to open more user sessions.
+    ```
+    php -S localhost:8080
+    ```
 
-I tried to write a few tests, but since I am implementing an user interface (UI) for this project, you can see the responses in the UI.
+
 
 
 
